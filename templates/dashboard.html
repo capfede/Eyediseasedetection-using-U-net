@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Eye Medicore</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #FFFFFF;
+        }
+
+        .header {
+            background-color: #8B1538;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+            border: 1px solid #D4AF37;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            color: inherit;
+            box-shadow: 0 6px 12px rgba(212, 175, 55, 0.2);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #D4AF37;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h2>Eye Medicore Dashboard</h2>
+            <div>
+                <span class="me-3">Welcome, {{ current_user.username }}</span>
+                <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="row g-4">
+            {% if current_user.role in ['doctor', 'staff'] %}
+            <div class="col-md-4">
+                <a href="/register" class="card p-4 text-center">
+                    <div class="card-icon">👤</div>
+                    <h4>Register Patient</h4>
+                    <p class="text-muted">Register a new patient into the system</p>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="/diagnosis/patients" class="card p-4 text-center">
+                    <div class="card-icon">🔬</div>
+                    <h4>Start Diagnosis</h4>
+                    <p class="text-muted">Perform eye disease detection</p>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="/appointments" class="card p-4 text-center">
+                    <div class="card-icon">📅</div>
+                    <h4>Appointments</h4>
+                    <p class="text-muted">Manage patient appointments</p>
+                </a>
+            </div>
+            {% endif %}
+
+            {% if current_user.role == 'doctor' %}
+            <div class="col-md-4">
+                <a href="/doctor/promote" class="card p-4 text-center">
+                    <div class="card-icon">⚕️</div>
+                    <h4>Promote Staff</h4>
+                    <p class="text-muted">Manage staff roles</p>
+                </a>
+            </div>
+            {% endif %}
+
+            {% if current_user.role == 'it_expert' %}
+            <div class="col-md-4">
+                <a href="/admin/dashboard" class="card p-4 text-center">
+                    <div class="card-icon">🔧</div>
+                    <h4>Admin Panel</h4>
+                    <p class="text-muted">System administration tools</p>
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="col-md-4">
+                <a href="/profile" class="card p-4 text-center">
+                    <div class="card-icon">⚙️</div>
+                    <h4>Profile Settings</h4>
+                    <p class="text-muted">Manage your own account</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

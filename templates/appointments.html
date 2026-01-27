@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments - Eye Medicore</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #FFFFFF;
+        }
+
+        .navbar {
+            background-color: #8B1538;
+        }
+
+        .btn-today {
+            background-color: #D4AF37;
+            color: #000;
+            border: none;
+        }
+
+        .btn-today:hover {
+            background-color: #B8860B;
+        }
+
+        /* Table Header Override */
+        .table thead th {
+            background-color: #8B1538;
+            color: white;
+            border-color: #8B1538;
+        }
+
+        .btn-primary {
+            background-color: #8B1538;
+            border-color: #8B1538;
+        }
+
+        .btn-primary:hover {
+            background-color: #A91D3A;
+            border-color: #A91D3A;
+        }
+
+        .btn-info {
+            background-color: #D4AF37;
+            border-color: #D4AF37;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #B8860B;
+            border-color: #B8860B;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Eye Medicore</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="/appointments">Appointments</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Appointments</h2>
+            <div>
+                <a href="/appointments?date={{ today }}" class="btn btn-today">Today's Appointments</a>
+                <a href="/book_appointment" class="btn btn-primary">Book New Appointment</a>
+            </div>
+        </div>
+
+        <div class="card p-4 mb-4">
+            <form action="/appointments" method="GET" class="row g-3 align-items-end">
+                <div class="col-md-8">
+                    <label class="form-label">Filter by Date</label>
+                    <input type="date" name="date" class="form-control" value="{{ filter_date }}">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-info w-100 text-white">Apply Filter</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card p-4">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                        <tr>
+                            <td>{{ appointment.id }}</td>
+                            <td>{{ appointment.patient_ref.name }} (#{{ appointment.patient_id }})</td>
+                            <td>{{ appointment.date.strftime('%Y-%m-%d') if appointment.date else 'N/A' }}</td>
+                            <td>{{ appointment.time.strftime('%H:%M') if appointment.time else 'N/A' }}</td>
+                            <td><span
+                                    class="badge bg-{{ 'success' if appointment.status == 'Scheduled' else 'secondary' }}">{{
+                                    appointment.status }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">No appointments found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
