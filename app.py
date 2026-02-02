@@ -139,11 +139,13 @@ def dashboard():
     patient_count = Patient.query.count()
     appointment_count = Appointment.query.count()
     diagnosis_count = Diagnosis.query.count() if current_user.role == 'doctor' else 0
+    staff_count = User.query.filter_by(role='staff').count() if current_user.role == 'doctor' else 0
     
     return render_template('unified_dashboard.html',
                            patient_count=patient_count,
                            appointment_count=appointment_count,
-                           diagnosis_count=diagnosis_count)
+                           diagnosis_count=diagnosis_count,
+                           staff_count=staff_count)
 
 @app.route('/patient/search', methods=['POST'])
 @login_required
@@ -178,6 +180,44 @@ def admin_dashboard():
                            staff_count=staff_count,
                            patient_count=patient_count,
                            appointment_count=appointment_count)
+
+@app.route('/doctors')
+@login_required
+@role_required('it_expert')
+def doctors_list():
+    doctors = User.query.filter_by(role='doctor').order_by(User.id.desc()).all()
+    return render_template('list_view.html', 
+                           items=doctors,
+                           list_type='doctors',
+                           page_title='Doctors List')
+
+@app.route('/staff')
+@login_required
+def staff_list():
+    # Accessible to IT Expert and Doctor
+    if current_user.role not in ['it_expert', 'doctor']:
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    staff = User.query.filter_by(role='staff').order_by(User.id.desc()).all()
+    return render_template('list_view.html', 
+                           items=staff,
+                           list_type='staff',
+                           page_title='Staff Members List')
+
+@app.route('/patients')
+@login_required
+def patients_list():
+    # Accessible to all authenticated users
+    if current_user.role not in ['it_expert', 'doctor', 'staff']:
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    patients = Patient.query.order_by(Patient.id.desc()).all()
+    return render_template('list_view.html', 
+                           items=patients,
+                           list_type='patients',
+                           page_title='Patients List')
 
 
 @app.route('/admin/create_user', methods=['POST'])

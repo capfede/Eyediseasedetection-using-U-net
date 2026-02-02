@@ -1,0 +1,95 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-list me-2"></i>{{ page_title }}</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if items %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        {% if list_type in ['doctors', 'staff'] %}
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Account Status</th>
+                        <th>Created At</th>
+                        {% elif list_type == 'patients' %}
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Blood Group</th>
+                        <th>Place</th>
+                        <th>Phone</th>
+                        <th>Registered On</th>
+                        {% endif %}
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        {% if list_type in ['doctors', 'staff'] %}
+                        <td>{{ item.id }}</td>
+                        <td><strong>{{ item.username }}</strong></td>
+                        <td>{{ item.email if item.email else 'N/A' }}</td>
+                        <td>{{ item.phone_number if item.phone_number else 'N/A' }}</td>
+                        <td>
+                            <span
+                                class="badge-role badge-{{ 'active' if item.account_status == 'Active' else 'inactive' }}">
+                                {{ item.account_status if item.account_status else 'Active' }}
+                            </span>
+                        </td>
+                        <td>{{ item.created_at.strftime('%Y-%m-%d') if item.created_at else 'N/A' }}</td>
+                        <td class="text-end">
+                            {% if current_user.role == 'it_expert' %}
+                            <a href="/admin/view_user/{{ item.id }}" class="btn-action btn-view" title="View Profile">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                        {% elif list_type == 'patients' %}
+                        <td>{{ item.id }}</td>
+                        <td><strong>{{ item.name }}</strong></td>
+                        <td>{{ item.age }}</td>
+                        <td>{{ item.gender }}</td>
+                        <td>{{ item.blood_group }}</td>
+                        <td>{{ item.place }}</td>
+                        <td>{{ item.phone }}</td>
+                        <td>{{ item.created_at.strftime('%Y-%m-%d') if item.created_at else 'N/A' }}</td>
+                        <td class="text-end">
+                            <a href="/patient/{{ item.id }}" class="btn-action btn-view" title="View Patient">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No data available</h5>
+            <p class="text-muted">There are no {{ list_type }} to display at the moment.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{% if current_user.role == 'it_expert' %}/admin/dashboard{% else %}/dashboard{% endif %}"
+        class="btn btn-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+{% endblock %}

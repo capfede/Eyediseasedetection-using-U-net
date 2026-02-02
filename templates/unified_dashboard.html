@@ -7,28 +7,40 @@
 <!-- Stats Cards - Visible to ALL roles -->
 <div class="stats-row">
     {% if current_user.role == 'it_expert' %}
-    <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-user-md"></i></div>
-        <div class="stat-value">{{ doctor_count }}</div>
-        <div class="stat-label">Doctors</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-users"></i></div>
-        <div class="stat-value">{{ staff_count }}</div>
-        <div class="stat-label">Staff Members</div>
-    </div>
+    <a href="/doctors" class="stat-card-link">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-user-md"></i></div>
+            <div class="stat-value">{{ doctor_count }}</div>
+            <div class="stat-label">Doctors</div>
+        </div>
+    </a>
     {% endif %}
 
-    <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-hospital-user"></i></div>
-        <div class="stat-value">{{ patient_count }}</div>
-        <div class="stat-label">Patients</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-        <div class="stat-value">{{ appointment_count }}</div>
-        <div class="stat-label">Appointments</div>
-    </div>
+    {% if current_user.role in ['it_expert', 'doctor'] %}
+    <a href="/staff" class="stat-card-link">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-value">{{ staff_count }}</div>
+            <div class="stat-label">Staff Members</div>
+        </div>
+    </a>
+    {% endif %}
+
+    <a href="/patients" class="stat-card-link">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-hospital-user"></i></div>
+            <div class="stat-value">{{ patient_count }}</div>
+            <div class="stat-label">Patients</div>
+        </div>
+    </a>
+
+    <a href="/appointments" class="stat-card-link">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-value">{{ appointment_count }}</div>
+            <div class="stat-label">Appointments</div>
+        </div>
+    </a>
 
     {% if current_user.role == 'doctor' %}
     <div class="stat-card">
@@ -38,6 +50,7 @@
     </div>
     {% endif %}
 </div>
+
 
 <!-- Quick Actions - Role-specific -->
 {% if current_user.role in ['doctor', 'staff'] %}
